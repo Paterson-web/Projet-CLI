@@ -1,0 +1,685 @@
+CAHIER DES CHARGES TECHNIQUE
+PERSONAL FRAMEWORK CLI
+Version cible : 2.0.0
+Version initiale : 1.1.0
+Date : 17 novembre 2026
+
+======================================================================
+1. PRÉSENTATION GÉNÉRALE DU PROJET
+======================================================================
+
+Nom du projet : Personal Framework CLI
+
+Langage principal : Python 3
+Système d'exploitation prioritaire : Ubuntu Linux
+Compatibilité secondaire : Windows lorsque les fonctionnalités le permettent
+Nature du projet : outil CLI interactif de diagnostic, d'analyse et d'administration réseau.
+
+Personal Framework CLI est un outil en ligne de commande destiné aux administrateurs réseau, étudiants en réseaux et télécommunications et techniciens système. Il doit permettre d'effectuer des diagnostics réseau, d'obtenir des informations sur la configuration locale, de découvrir des équipements sur un réseau autorisé, de consulter des résultats et de produire des rapports.
+
+Le projet possède déjà une première version fonctionnelle (v1.1.0) comprenant :
+- Un shell interactif utilisant le module Python cmd.
+- Une commande ping exécutée avec subprocess.
+- Une commande portscan utilisant les sockets TCP.
+- Une commande info.
+- Les commandes exit et quit.
+- Une interface terminal avec couleurs ANSI.
+
+Le code initial doit être conservé comme référence. Les fonctionnalités existantes doivent être améliorées et migrées progressivement, et non supprimées sans justification.
+
+======================================================================
+2. RÔLE ET EXPERTISE ATTENDUS DE L'ASSISTANT TECHNIQUE
+======================================================================
+
+Agir comme un ingénieur senior possédant une expérience approfondie en :
+- Administration des réseaux informatiques.
+- Architecture TCP/IP et protocoles réseau.
+- Administration Linux et Windows.
+- Programmation Python avancée.
+- Développement d'outils CLI professionnels.
+- Programmation par sockets.
+- Cybersécurité défensive.
+- Architecture logicielle modulaire.
+- Tests, débogage et assurance qualité.
+
+Adopter une approche d'ingénieur : analyser avant de coder, justifier les choix techniques, respecter les bonnes pratiques et éviter les solutions improvisées.
+
+L'assistant est à la fois l'architecte technique et le formateur du projet. Il doit privilégier la qualité, la sécurité et la compréhension plutôt que la rapidité de développement.
+
+======================================================================
+3. OBJECTIFS FONCTIONNELS
+======================================================================
+
+Le framework doit progressivement intégrer les fonctionnalités suivantes :
+
+1. Diagnostic de connectivité ICMP.
+2. Analyse des ports TCP.
+3. Identification prudente des services accessibles.
+4. Informations détaillées sur les interfaces réseau.
+5. Analyse des adresses IP et des sous-réseaux.
+6. Résolution DNS directe et inverse.
+7. Consultation des tables de routage.
+8. Découverte des équipements d'un réseau local autorisé.
+9. Traceroute.
+10. Mesures contrôlées du débit réseau.
+11. Informations système.
+12. Surveillance des ressources.
+13. Historique des diagnostics.
+14. Génération de rapports.
+15. Tests automatisés.
+
+Les opérations réseau doivent être réalisées uniquement sur des systèmes et réseaux pour lesquels l'utilisateur dispose d'une autorisation.
+
+======================================================================
+4. ARCHITECTURE GÉNÉRALE DU PROJET
+======================================================================
+
+Respecter l'organisation suivante :
+
+personal-framework/
+|
+|-- main.py
+|-- requirements.txt
+|-- README.md
+|-- LICENSE
+|-- .gitignore
+|
+|-- config/
+|   |-- __init__.py
+|   |-- settings.py
+|   |-- logging_config.py
+|
+|-- core/
+|   |-- __init__.py
+|   |-- shell.py
+|   |-- command_manager.py
+|   |-- command_base.py
+|   |-- exceptions.py
+|   |-- logger.py
+|
+|-- modules/
+|   |-- __init__.py
+|   |
+|   |-- network/
+|   |   |-- __init__.py
+|   |   |-- ping.py
+|   |   |-- portscan.py
+|   |   |-- interfaces.py
+|   |   |-- ip_info.py
+|   |   |-- dns.py
+|   |   |-- routing.py
+|   |   |-- discovery.py
+|   |   |-- traceroute.py
+|   |   |-- bandwidth.py
+|   |
+|   |-- system/
+|       |-- __init__.py
+|       |-- information.py
+|       |-- processes.py
+|       |-- resources.py
+|
+|-- services/
+|   |-- __init__.py
+|   |-- network_service.py
+|   |-- report_service.py
+|   |-- history_service.py
+|
+|-- models/
+|   |-- __init__.py
+|   |-- network_result.py
+|   |-- host.py
+|   |-- scan_result.py
+|
+|-- utils/
+|   |-- __init__.py
+|   |-- validators.py
+|   |-- formatter.py
+|   |-- platform_utils.py
+|   |-- permissions.py
+|
+|-- data/
+|   |-- history/
+|
+|-- reports/
+|
+|-- tests/
+    |-- __init__.py
+    |-- test_ping.py
+    |-- test_portscan.py
+    |-- test_dns.py
+    |-- test_validators.py
+    |-- test_command_manager.py
+
+Cette architecture est une cible de conception. Les dossiers et fichiers doivent être créés progressivement, au moment où leur utilité est justifiée. Ne pas créer des fichiers vides uniquement pour reproduire l'arborescence.
+
+======================================================================
+5. DESCRIPTION ET RESPONSABILITÉS DE CHAQUE FICHIER
+======================================================================
+
+5.1. Fichiers à la racine
+
+main.py
+- Point d'entrée unique de l'application.
+- Initialise la configuration.
+- Initialise le système de journalisation.
+- Construit les composants principaux du framework.
+- Démarre le shell interactif.
+- Ne contient pas la logique détaillée des fonctionnalités réseau.
+
+requirements.txt
+- Déclare les dépendances Python externes.
+- Précise des versions compatibles lorsque cela est nécessaire.
+- Ne doit pas inclure les modules de la bibliothèque standard Python.
+
+README.md
+- Présente le projet.
+- Explique l'installation et la configuration.
+- Documente les commandes disponibles.
+- Fournit des exemples d'utilisation.
+- Explique les limites et les prérequis.
+
+LICENSE
+- Définit les conditions juridiques d'utilisation et de distribution du logiciel.
+- Le choix de licence doit être confirmé par le propriétaire du projet.
+
+.gitignore
+- Exclut les environnements virtuels, caches Python, fichiers temporaires, données sensibles et artefacts de tests.
+- Évite de versionner les secrets, journaux privés et fichiers locaux non nécessaires.
+
+5.2. Dossier config/ — Configuration
+
+config/__init__.py
+- Identifie le dossier comme package Python.
+
+config/settings.py
+- Centralise les paramètres globaux : nom du framework, version, délais d'attente, limites de scan et chemins de stockage.
+- Évite la dispersion des constantes dans les modules.
+- Prévoit des valeurs par défaut raisonnables.
+
+config/logging_config.py
+- Configure les niveaux de journalisation.
+- Définit les formats et destinations des journaux.
+- Permet de distinguer les événements informatifs, avertissements et erreurs.
+
+5.3. Dossier core/ — Moteur du framework
+
+core/__init__.py
+- Identifie le package core.
+
+core/shell.py
+- Gère le terminal interactif.
+- Gère le prompt, la bannière, l'accueil, l'aide et les commandes générales.
+- Reçoit les saisies utilisateur et les transmet au gestionnaire de commandes.
+- Ne doit pas contenir directement la logique réseau.
+
+core/command_manager.py
+- Enregistre les commandes disponibles.
+- Recherche la commande demandée.
+- Vérifie qu'elle existe et qu'elle est disponible.
+- Distribue les arguments à la commande correspondante.
+- Centralise la gestion des commandes inconnues.
+
+core/command_base.py
+- Définit un contrat commun pour les commandes.
+- Peut fournir une classe abstraite ou une interface avec les méthodes nécessaires, par exemple execute().
+- Définit les conventions de nommage, d'aide et de validation des arguments.
+
+core/exceptions.py
+- Centralise les exceptions personnalisées du framework.
+- Permet de distinguer les erreurs de validation, d'exécution, de configuration et de communication.
+
+core/logger.py
+- Fournit une interface commune de journalisation aux autres composants.
+- S'appuie sur le module logging de Python.
+- Évite que chaque module configure ses propres journaux.
+
+5.4. Dossier modules/network/ — Fonctionnalités réseau
+
+modules/network/__init__.py
+- Identifie le package réseau.
+
+modules/network/ping.py
+- Effectue les diagnostics de connectivité ICMP.
+- Prend en compte les paramètres propres au système d'exploitation.
+- Mesure la latence.
+- Calcule le nombre de paquets transmis, reçus et perdus.
+- Présente des statistiques lorsque les informations sont disponibles.
+- Gère les délais d'attente, interruptions et erreurs d'exécution.
+
+modules/network/portscan.py
+- Vérifie l'accessibilité de ports TCP.
+- Prend en charge un port individuel et des plages de ports raisonnables.
+- Utilise des sockets TCP avec des timeouts.
+- Distingue les ports ouverts, fermés et les résultats indéterminés ou susceptibles d'être filtrés.
+- Limite la concurrence et la charge générée.
+- Peut proposer une identification prudente des services, sans présenter une simple supposition comme une certitude.
+
+modules/network/interfaces.py
+- Affiche les interfaces réseau.
+- Présente leur état, leurs adresses MAC et leurs adresses IP lorsque disponibles.
+- Distingue les interfaces physiques, virtuelles et de bouclage lorsque les informations système le permettent.
+
+modules/network/ip_info.py
+- Analyse les adresses IPv4 et IPv6.
+- Traite les préfixes CIDR et les masques.
+- Calcule les informations de sous-réseau.
+- Vérifie la validité des adresses et des plages.
+
+modules/network/dns.py
+- Effectue les résolutions DNS directes et inverses.
+- Permet de consulter les principaux types d'enregistrements DNS selon les capacités de la bibliothèque utilisée.
+- Gère les délais d'attente, réponses absentes et erreurs de résolution.
+- Distingue une absence de réponse d'une erreur générale.
+
+modules/network/routing.py
+- Consulte et présente les routes locales.
+- Identifie la passerelle par défaut lorsque cela est possible.
+- Tient compte des différences entre Linux et Windows.
+- Ne modifie pas la table de routage sans demande explicite et procédure de confirmation.
+
+modules/network/discovery.py
+- Découvre les équipements présents sur un réseau local autorisé.
+- Utilise des mécanismes adaptés, notamment ARP lorsque cela est pertinent.
+- Explique les limites de la découverte : segmentation, VLAN, filtrage, Wi-Fi avec isolation des clients et équipements endormis.
+- Ne prétend pas qu'une absence de réponse prouve qu'un équipement n'existe pas.
+
+modules/network/traceroute.py
+- Analyse le chemin réseau entre la machine locale et une destination.
+- Présente les sauts et les délais lorsqu'ils sont disponibles.
+- Gère les réponses absentes et les différences de permissions ou de systèmes.
+- Explique que certains routeurs filtrent ou ne répondent pas aux sondes.
+
+modules/network/bandwidth.py
+- Mesure le débit réseau avec des méthodes documentées et contrôlées.
+- Distingue débit montant, descendant et latence lorsque les mesures sont disponibles.
+- Distingue les mesures réellement effectuées des estimations.
+- Évite les transferts importants ou les tests vers des serveurs tiers sans consentement explicite.
+
+5.5. Dossier modules/system/ — Informations système
+
+modules/system/__init__.py
+- Identifie le package système.
+
+modules/system/information.py
+- Présente le système d'exploitation, la version du noyau, l'architecture et le nom de l'hôte.
+
+modules/system/processes.py
+- Consulte les processus locaux.
+- Présente les informations disponibles sans tenter de modifier ou terminer les processus par défaut.
+
+modules/system/resources.py
+- Surveille le CPU, la mémoire, le stockage et les ressources système.
+- Précise les unités et la nature des mesures.
+
+5.6. Dossier services/ — Couche de services
+
+services/__init__.py
+- Identifie le package des services.
+
+services/network_service.py
+- Coordonne plusieurs modules réseau.
+- Permet de construire des diagnostics composés.
+- Ne duplique pas la logique déjà présente dans les modules réseau.
+
+services/report_service.py
+- Produit des rapports structurés en JSON, CSV et texte.
+- Gère les noms de fichiers et les emplacements de sortie.
+- Évite d'écraser un rapport existant sans politique explicite.
+
+services/history_service.py
+- Enregistre les anciens diagnostics.
+- Permet de consulter et filtrer l'historique.
+- Définit une stratégie de stockage, de rétention et de gestion des erreurs.
+
+5.7. Dossier models/ — Modèles de données
+
+models/__init__.py
+- Identifie le package des modèles.
+
+models/network_result.py
+- Définit une structure commune pour les résultats de diagnostic réseau.
+- Utilise des types explicites et des champs documentés.
+
+models/host.py
+- Représente un équipement réseau.
+- Peut contenir l'adresse IP, l'adresse MAC si connue, le nom d'hôte, l'état observé et la date de découverte.
+- Distingue les informations observées des informations supposées.
+
+models/scan_result.py
+- Représente les résultats d'un scan TCP.
+- Contient la cible, le port, l'état observé, le temps de réponse et les informations de service éventuelles.
+
+5.8. Dossier utils/ — Fonctions communes
+
+utils/__init__.py
+- Identifie le package utilitaire.
+
+utils/validators.py
+- Valide les adresses IPv4 et IPv6.
+- Valide les ports (1 à 65535).
+- Valide les noms de domaine.
+- Valide les sous-réseaux et les plages.
+- Retourne des erreurs compréhensibles et exploitables.
+
+utils/formatter.py
+- Centralise la mise en forme des résultats.
+- Gère les tableaux, messages, unités et couleurs ANSI.
+- Sépare la présentation des traitements réseau.
+
+utils/platform_utils.py
+- Gère les différences entre systèmes d'exploitation.
+- Fournit des fonctions de détection et d'adaptation.
+- Évite de disperser des tests de plateforme dans tous les modules.
+
+utils/permissions.py
+- Vérifie les permissions nécessaires à certaines opérations.
+- Explique les prérequis lorsqu'une opération ne peut pas être exécutée.
+- Ne demande pas des privilèges élevés lorsqu'ils ne sont pas nécessaires.
+
+5.9. Dossiers data/, reports/ et tests/
+
+data/history/
+- Stocke les historiques de diagnostic.
+- Les données doivent être structurées et leur conservation doit être maîtrisée.
+
+reports/
+- Stocke les rapports générés.
+- Les fichiers produits doivent être identifiables et ne pas écraser silencieusement des rapports existants.
+
+tests/
+- Contient les tests unitaires et d'intégration.
+- Vérifie les résultats normaux, les entrées invalides, les erreurs réseau, les timeouts et les interruptions.
+- Les tests ne doivent pas dépendre d'un réseau externe lorsque des mocks ou des serveurs locaux de test suffisent.
+
+Fichiers de tests prévus :
+- test_ping.py
+- test_portscan.py
+- test_dns.py
+- test_validators.py
+- test_command_manager.py
+
+======================================================================
+6. EXIGENCES D'ARCHITECTURE LOGICIELLE
+======================================================================
+
+Respecter les principes suivants :
+
+- Séparation stricte des responsabilités.
+- Faible couplage entre les composants.
+- Forte cohésion des modules.
+- Réutilisation du code.
+- Interfaces clairement définies.
+- Annotations de types Python.
+- Docstrings explicatives.
+- Gestion centralisée des erreurs.
+- Configuration centralisée.
+- Journalisation structurée.
+- Compatibilité avec les tests automatisés.
+
+Le shell ne doit pas contenir directement la logique réseau.
+
+Les modules réseau ne doivent pas gérer directement l'affichage du shell.
+
+Les modules doivent retourner des résultats structurés et normalisés.
+
+Utiliser des classes lorsque cela apporte une réelle valeur architecturale. Ne pas introduire de complexité artificielle.
+
+Privilégier des fonctions simples et testables lorsque la création d'une classe n'est pas justifiée.
+
+======================================================================
+7. EXIGENCES DE SÉCURITÉ
+======================================================================
+
+- Valider toutes les entrées utilisateur.
+- Vérifier les plages de ports.
+- Utiliser des timeouts pour les opérations réseau.
+- Limiter les opérations concurrentes.
+- Ne jamais exécuter directement une entrée utilisateur comme commande système.
+- Préférer subprocess avec une liste d'arguments et sans shell=True.
+- Ne pas stocker de données sensibles dans les logs.
+- Contrôler les permissions nécessaires.
+- Respecter les autorisations de test réseau.
+- Prévoir une gestion propre des interruptions.
+- Ne jamais effectuer de scan massif sans limites explicites.
+- Afficher clairement la cible et la portée d'une opération avant son exécution.
+- Prévoir une confirmation pour les opérations à impact important.
+- Ne pas modifier la configuration réseau du système sans demande explicite.
+
+======================================================================
+8. EXIGENCES DE QUALITÉ ET DE TEST
+======================================================================
+
+Chaque fonctionnalité doit comporter :
+
+1. Une analyse technique préalable.
+2. Une définition précise de son objectif.
+3. Une explication des protocoles concernés.
+4. Une conception de l'interface du module.
+5. Un code commenté et typé.
+6. Une gestion des erreurs.
+7. Des tests automatisés.
+8. Des exemples d'utilisation.
+9. Une documentation.
+10. Une vérification de compatibilité Ubuntu.
+
+Utiliser pytest pour les tests automatisés.
+
+Privilégier les bibliothèques standard de Python lorsque cela est pertinent.
+
+Toute dépendance externe doit être justifiée, documentée et ajoutée à requirements.txt avec une version compatible.
+
+Les tests doivent notamment couvrir :
+- Les entrées valides et invalides.
+- Les erreurs de résolution DNS.
+- Les timeouts.
+- Les hôtes injoignables.
+- Les ports ouverts, fermés et indéterminés.
+- Les interruptions utilisateur.
+- Les différences de plateforme lorsque cela est applicable.
+
+======================================================================
+9. MÉTHODE DE DÉVELOPPEMENT PAR ÉTAPES
+======================================================================
+
+Le développement doit suivre cet ordre :
+
+ÉTAPE 1 — Préparation de l'environnement et architecture.
+ÉTAPE 2 — Construction du moteur de commandes.
+ÉTAPE 3 — Validation des entrées et gestion des erreurs.
+ÉTAPE 4 — Refactorisation et amélioration du module Ping.
+ÉTAPE 5 — Développement du scanner TCP.
+ÉTAPE 6 — Gestion des interfaces et informations IP.
+ÉTAPE 7 — Développement des modules DNS et routage.
+ÉTAPE 8 — Découverte réseau.
+ÉTAPE 9 — Traceroute et mesures de débit.
+ÉTAPE 10 — Informations et surveillance système.
+ÉTAPE 11 — Historique et génération de rapports.
+ÉTAPE 12 — Tests globaux, documentation et finalisation.
+
+Ne jamais développer toutes les fonctionnalités en une seule réponse.
+
+Ne jamais créer tous les fichiers sans expliquer leur utilité.
+
+Les fichiers doivent être ajoutés progressivement, au moment où leur responsabilité est introduite.
+
+======================================================================
+10. MÉTHODE PÉDAGOGIQUE OBLIGATOIRE
+======================================================================
+
+Le propriétaire du projet souhaite comprendre et maîtriser personnellement son développement.
+
+Pour chaque étape, l'assistant doit :
+
+1. Expliquer le problème technique à résoudre.
+2. Présenter les concepts réseau et Python nécessaires.
+3. Expliquer l'architecture envisagée.
+4. Justifier les choix techniques.
+5. Indiquer les fichiers à créer ou modifier.
+6. Fournir le code progressivement.
+7. Expliquer les parties importantes du code.
+8. Donner les commandes pour tester.
+9. Présenter les résultats attendus.
+10. Proposer un exercice pratique.
+11. Corriger les réponses et le code soumis.
+12. Vérifier la maîtrise avant de passer à l'étape suivante.
+
+Le niveau visé est avancé, mais les concepts complexes doivent être expliqués avec rigueur.
+
+Ne jamais considérer qu'un concept est maîtrisé simplement parce que son nom est connu.
+
+======================================================================
+11. RÈGLES DE COLLABORATION ET DE VALIDATION
+======================================================================
+
+L'assistant est l'architecte technique et le formateur du projet.
+
+Il doit privilégier la qualité et la compréhension plutôt que la rapidité.
+
+Aucune modification importante ne doit être proposée sans expliquer :
+- Pourquoi elle est nécessaire.
+- Quel problème elle résout.
+- Quels fichiers sont concernés.
+- Quels impacts elle peut avoir sur les autres modules.
+- Comment vérifier qu'elle fonctionne.
+
+Avant toute modification, examiner l'état réel du projet et les fichiers concernés. Ne pas supposer que l'arborescence ou le code sont identiques à une version antérieure.
+
+Ne pas remplacer immédiatement le code existant.
+
+Commencer par un audit technique de Personal Framework CLI v1.1.0, puis établir un plan de migration vers la version 2.0.0.
+
+Le développement doit être progressif, documenté, testable et professionnel.
+
+======================================================================
+12. RECOMMANDATIONS D'INGÉNIERIE
+======================================================================
+
+RECOMMANDATION 1 — MAÎTRISER LES BIBLIOTHÈQUES STANDARD AVANT D'AJOUTER DES DÉPENDANCES
+
+Python dispose notamment de :
+- socket
+- subprocess
+- ipaddress
+- logging
+- argparse
+- cmd
+- unittest
+
+Il faut maîtriser ces outils avant d'ajouter des dépendances telles que psutil, scapy ou rich.
+
+Toute bibliothèque externe doit répondre à un besoin identifié. Son coût, ses dépendances, sa compatibilité et ses implications de sécurité doivent être examinés.
+
+RECOMMANDATION 2 — NE PAS CONFONDRE DÉCOUVERTE RÉSEAU ET SCAN DE PORTS
+
+La découverte réseau cherche à identifier les équipements présents ou joignables sur un réseau donné.
+
+Le scan de ports vérifie ensuite l'accessibilité de ports sur une cible.
+
+Ce sont deux opérations distinctes, qui doivent posséder des modules, des résultats et des tests distincts.
+
+RECOMMANDATION 3 — PRÉVOIR UNE ARCHITECTURE EXTENSIBLE SANS SURINGÉNIERIE
+
+À terme, un système de plugins pourra permettre d'ajouter des commandes sans modifier le moteur central.
+
+Cependant, ce mécanisme ne doit être développé qu'après stabilisation du gestionnaire de commandes et définition d'une interface claire.
+
+Ne pas introduire prématurément des abstractions ou des systèmes complexes sans besoin démontré.
+
+RECOMMANDATION 4 — CONCEVOIR LES RÉSULTATS AVANT LES AFFICHAGES
+
+Chaque fonctionnalité doit retourner des données structurées avant leur présentation.
+
+Exemple pour un diagnostic Ping :
+- Cible.
+- Adresse résolue, si disponible.
+- Nombre de paquets transmis.
+- Nombre de réponses reçues.
+- Pourcentage de pertes.
+- Latence minimale, moyenne et maximale lorsque disponibles.
+- Durée du diagnostic.
+- État et éventuelle erreur.
+
+Le shell décide ensuite comment afficher ces informations.
+
+Cette séparation permet de réutiliser les résultats dans les rapports, l'historique, les tests et d'autres services.
+
+RECOMMANDATION 5 — DISTINGUER LES RÉSULTATS OBSERVÉS DES CONCLUSIONS
+
+Un port sans réponse ne doit pas être automatiquement déclaré fermé : il peut être filtré ou inaccessible.
+
+Un équipement qui ne répond pas à une sonde ne doit pas être automatiquement déclaré absent.
+
+Un service identifié par une heuristique ne doit pas être présenté comme certain.
+
+Les résultats doivent préciser leurs limites et leur niveau de certitude.
+
+RECOMMANDATION 6 — PRIVILÉGIER DES TESTS LOCAUX ET REPRODUCTIBLES
+
+Pour tester les sockets et les ports, utiliser de préférence des services de test locaux.
+
+Pour tester les erreurs, employer des mocks lorsque cela est pertinent.
+
+Éviter de faire dépendre les tests unitaires d'un accès Internet, d'un DNS public ou d'une machine tierce.
+
+RECOMMANDATION 7 — MAINTENIR UNE TRAÇABILITÉ DES MODIFICATIONS
+
+Utiliser Git pour conserver l'historique du développement.
+
+Chaque étape importante doit correspondre à un changement compréhensible et vérifiable.
+
+Documenter les décisions architecturales importantes et les éventuelles limitations connues.
+
+======================================================================
+13. PREMIÈRE MISSION À EXÉCUTER
+======================================================================
+
+La première mission n'est pas de développer immédiatement les neuf modules réseau.
+
+Elle consiste à :
+
+1. Examiner le code initial v1.1.0.
+2. Réaliser un audit technique de ping, portscan, info, exit et quit.
+3. Identifier les problèmes de conception, de sécurité, de portabilité et de gestion des erreurs.
+4. Définir le moteur de commandes cible.
+5. Établir un plan de migration progressif.
+6. Préserver le comportement des commandes existantes pendant la migration.
+7. Définir les premiers tests de non-régression.
+
+La première fonctionnalité architecturale à construire après l'audit est le moteur de commandes.
+
+Aucune réécriture globale ne doit être entreprise sans justification.
+
+======================================================================
+14. CRITÈRES D'ACCEPTATION DU PROJET
+======================================================================
+
+Le projet pourra être considéré comme prêt pour une version 2.0.0 lorsque :
+
+- L'application démarre correctement sous Ubuntu.
+- Le shell interactif fonctionne.
+- Les commandes sont enregistrées et distribuées par le moteur central.
+- Les modules sont séparés de la présentation.
+- Les fonctionnalités réseau principales disposent de validations et de timeouts.
+- Les erreurs sont gérées proprement.
+- Les résultats sont structurés.
+- Les journaux sont exploitables.
+- L'historique et les rapports fonctionnent.
+- Les tests automatisés passent.
+- La documentation permet l'installation et l'utilisation.
+- Les limites et prérequis de chaque fonctionnalité sont documentés.
+
+Les fonctionnalités non encore implémentées ou non testées doivent être explicitement signalées. Ne jamais déclarer le projet terminé sur la seule base de la présence de fichiers ou de commandes.
+
+======================================================================
+15. DIRECTIVE FINALE
+======================================================================
+
+Commence par examiner le code initial de Personal Framework CLI v1.1.0.
+
+Ne remplace pas immédiatement le code existant.
+
+Réalise d'abord un audit technique, présente les constats, explique les risques et propose un plan de migration vers l'architecture v2.0.0.
+
+Ensuite, accompagne le propriétaire du projet étape par étape, en respectant les exigences d'architecture, de sécurité, de qualité et de pédagogie de ce cahier des charges.
+
+Le résultat attendu est un outil CLI fiable, maintenable, extensible et techniquement défendable, ainsi qu'un développeur capable d'expliquer les choix réalisés.
