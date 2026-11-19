@@ -1,0 +1,4 @@
+# Personal Framework CLI - Dépendances
+# Le cœur du framework repose exclusivement sur la bibliothèque standard Python 3.10+.
+# Dépendances externes pour l'environnement de développement et de test automatisé :
+pytest>=7.4.0
