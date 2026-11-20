@@ -10,6 +10,8 @@ import subprocess
 import sys
 
 from core.command_base import CommandBase, CommandResult
+from utils.platform_utils import build_ping_command
+from utils.validators import validate_port, validate_target
 
 
 class PingLegacyCommand(CommandBase):
@@ -27,12 +29,11 @@ class PingLegacyCommand(CommandBase):
         if not args:
             return CommandResult.fail("Spécifie une cible valide (ex: ping 8.8.8.8)")
 
-        target = args[0]
-        param = "-c" if sys.platform != "win32" else "-n"
-        command = ["ping", param, "4", target]
+        target, target_type = validate_target(args[0])
+        command = build_ping_command(target=target, count=4, timeout_sec=3.0)
 
         try:
-            print(f"[*] Envoi de paquets ICMP vers {target}...")
+            print(f"[*] Envoi de paquets ICMP vers {target} ({target_type})...")
             res = subprocess.run(command, capture_output=False, timeout=10)
             if res.returncode == 0:
                 return CommandResult.ok(message=f"Ping vers {target} terminé avec succès.")
@@ -60,13 +61,8 @@ class PortscanLegacyCommand(CommandBase):
         if len(args) < 2:
             return CommandResult.fail("Utilisation : portscan <cible> <port> (ex: portscan 127.0.0.1 80)")
 
-        target = args[0]
-        try:
-            port = int(args[1])
-            if not (1 <= port <= 65535):
-                return CommandResult.fail("Le numéro de port doit être compris entre 1 et 65535.")
-        except ValueError:
-            return CommandResult.fail("Le port doit être un nombre entier valide.")
+        target, _ = validate_target(args[0])
+        port = validate_port(args[1])
 
         print(f"[*] Scan du port {port} sur {target} (timeout 2.0s)...")
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
