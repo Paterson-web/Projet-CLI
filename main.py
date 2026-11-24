@@ -10,10 +10,10 @@ import sys
 from config.logging_config import setup_logging
 from core.builtin_commands import ClearCommand, ExitCommand, InfoCommand
 from core.command_manager import CommandManager
-from core.legacy_bridges import PortscanLegacyCommand
 from core.logger import get_logger
 from core.shell import PatersonShell
 from modules.network.ping import PingCommand
+from modules.network.portscan import PortscanCommand
 
 
 def bootstrap_command_manager() -> CommandManager:
@@ -27,8 +27,7 @@ def bootstrap_command_manager() -> CommandManager:
 
     # Enregistrement des modules réseau v2.0
     manager.register(PingCommand())
-    # Commandes transitoires restantes (v1.1.0 bridge)
-    manager.register(PortscanLegacyCommand())
+    manager.register(PortscanCommand())
 
     return manager
 
@@ -57,3 +56,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
